@@ -71,10 +71,10 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     }
 
     @Override
-    public User getById(Integer id) {
+    public User getById(Long id) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(USER_BY_ID)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return convertResultSetToUser(resultSet);
@@ -91,7 +91,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 
     private User convertResultSetToUser(ResultSet resultSet) throws SQLException {
         User user = new User();
-        user.setId(resultSet.getInt(USER_ID));
+        user.setId(resultSet.getLong(USER_ID));
         user.setFirstname(resultSet.getString(FIRST_NAME));
         user.setLastname(resultSet.getString(LAST_NAME));
         user.setEmail(resultSet.getString(EMAIL));
@@ -102,7 +102,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     }
 
     @Override
-    public Integer create(User user) {
+    public Long create(User user) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(NEW_USER, new String[]{USER_ID})) {
             statement.setString(1, user.getFirstname());
@@ -114,7 +114,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
+                    return generatedKeys.getLong(1);
                 } else {
                     throw new ApplicationException("Can't read generated keys for: " + user);
                 }
@@ -135,7 +135,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
             statement.setString(3, user.getPassword());
             statement.setString(4, user.getPhone());
             statement.setString(5, user.getRole().name());
-            statement.setInt(6, user.getId());
+            statement.setLong(6, user.getId());
             if (statement.executeUpdate() != 1) {
                 throw new ApplicationException("Nothing to update, because user not found by email: " + user.getEmail());
             }

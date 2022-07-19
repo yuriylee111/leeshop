@@ -37,7 +37,7 @@ public class AddToShoppingCartAction implements Action {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AddToShoppingCartForm form = new AddToShoppingCartForm(
-                Integer.parseInt(request.getParameter(PRODUCT_ID)),
+                Long.parseLong(request.getParameter(PRODUCT_ID)),
                 Integer.parseInt(request.getParameter(COUNT)),
                 request.getParameter(Constants.BACK_URL)
         );

@@ -2,17 +2,17 @@ package com.lee.shop.model.form;
 
 public class AddToShoppingCartForm {
 
-    private final int productId;
+    private final long productId;
     private final int count;
     private final String backUrl;
 
-    public AddToShoppingCartForm(int productId, int count, String backUrl) {
+    public AddToShoppingCartForm(long productId, int count, String backUrl) {
         this.productId = productId;
         this.count = count;
         this.backUrl = backUrl;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return productId;
     }
 

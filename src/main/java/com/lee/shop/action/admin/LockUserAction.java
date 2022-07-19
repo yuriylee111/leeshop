@@ -23,7 +23,7 @@ public class LockUserAction implements Action {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter(ID));
+        Long id = Long.parseLong(request.getParameter(ID));
         User user = userDao.getById(id);
         if (user == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

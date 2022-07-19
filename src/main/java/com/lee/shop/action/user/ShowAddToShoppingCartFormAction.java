@@ -27,7 +27,7 @@ public class ShowAddToShoppingCartFormAction implements Action {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter(PRODUCT_ID));
+        long productId = Long.parseLong(request.getParameter(PRODUCT_ID));
         Product product = productDao.getById(productId);
         if (product != null) {
             request.setAttribute(PRODUCT, product);

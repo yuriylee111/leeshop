@@ -19,7 +19,7 @@ public class RemoveFromShoppingCartAction implements Action {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ShoppingCart shoppingCart = WebUtils.getShoppingCart(request);
-        int productId = Integer.parseInt(request.getParameter(PRODUCT_ID));
+        Long productId = Long.parseLong(request.getParameter(PRODUCT_ID));
         int count = Integer.parseInt(request.getParameter(COUNT));
         shoppingCart.removeProduct(productId, count);
         if (shoppingCart.isEmpty()) {

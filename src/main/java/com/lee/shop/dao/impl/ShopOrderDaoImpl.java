@@ -81,10 +81,10 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
     }
 
     @Override
-    public List<ShopOrder> getAllForUser(Integer userId) {
+    public List<ShopOrder> getAllForUser(Long userId) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(All_ORDERS_BY_USER_ID)) {
-            statement.setInt(1, userId);
+            statement.setLong(1, userId);
             try (ResultSet rs = statement.executeQuery()) {
                 Map<Long, ShopOrder> shopOrderMap = new LinkedHashMap<>();
                 while (rs.next()) {

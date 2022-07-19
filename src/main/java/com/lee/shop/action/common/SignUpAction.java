@@ -40,7 +40,7 @@ public class SignUpAction implements Action {
             Map<String, String> validationErrors = userFormValidator.getErrors(form);
             if (validationErrors.isEmpty()) {
                 User user = createFrom(form);
-                Integer id = userDao.create(user);
+                Long id = userDao.create(user);
                 user.setId(id);
                 WebUtils.setCurrentSessionUser(request, user);
                 RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);

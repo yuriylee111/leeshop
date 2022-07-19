@@ -8,7 +8,7 @@ public interface ProductDao {
 
     List<Product> getAll();
 
-    List<Product> getAllForCategory(Short categoryId);
+    List<Product> getAllForCategory(Long categoryId);
 
-    Product getById(int id);
+    Product getById(Long id);
 }

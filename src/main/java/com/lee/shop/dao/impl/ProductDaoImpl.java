@@ -63,10 +63,10 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getAllForCategory(Short categoryId) {
+    public List<Product> getAllForCategory(Long categoryId) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(All_PRODUCTS_BY_CATEGORY)) {
-            statement.setShort(1, categoryId);
+            statement.setLong(1, categoryId);
             try (ResultSet rs = statement.executeQuery()) {
                 List<Product> productList = new ArrayList<>();
                 while (rs.next()) {
@@ -82,10 +82,10 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
     }
 
     @Override
-    public Product getById(int id) {
+    public Product getById(Long id) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(PRODUCT_BY_ID)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     return convertResultSetToProduct(rs);

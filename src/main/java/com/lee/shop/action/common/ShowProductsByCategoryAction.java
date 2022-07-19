@@ -25,7 +25,7 @@ public class ShowProductsByCategoryAction implements Action {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        short categoryId = Short.parseShort(request.getParameter(CATEGORY_ID));
+        Long categoryId = Long.parseLong(request.getParameter(CATEGORY_ID));
         List<Product> products = productDao.getAllForCategory(categoryId);
         request.setAttribute(PRODUCTS, products);
         RoutingUtils.forwardToPage(PRODUCTS_JSP, request, response);
