@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `category`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
-  `id` smallint NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `category_name_IDX` (`name`) USING BTREE
@@ -28,7 +28,7 @@ DROP TABLE IF EXISTS `country`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `country` (
-  `id` smallint NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `country_name_IDX` (`name`) USING BTREE
@@ -44,7 +44,7 @@ DROP TABLE IF EXISTS `order_detail`;
 CREATE TABLE `order_detail` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `order_id` bigint NOT NULL,
-  `product_id` int NOT NULL,
+  `product_id` bigint NOT NULL,
   `count` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `order_detail_product_FK` (`product_id`),
@@ -60,14 +60,14 @@ DROP TABLE IF EXISTS `product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `description` text,
   `image` varchar(255) DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `count` int DEFAULT '0',
-  `country_id` smallint NOT NULL,
-  `category_id` smallint NOT NULL,
+  `country_id` bigint NOT NULL,
+  `category_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `product_category_FK` (`category_id`),
   KEY `product_country_FK` (`country_id`),
@@ -84,7 +84,7 @@ DROP TABLE IF EXISTS `shop_order`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shop_order` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `status` enum('CREATED','ACCEPTED','CANCELLED','TRANSFERRED') NOT NULL,
   `created` timestamp NULL DEFAULT NULL,
   `total_cost` decimal(10,2) DEFAULT NULL,
@@ -100,7 +100,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `firstname` varchar(30) NOT NULL,
   `lastname` varchar(30) NOT NULL,
   `email` varchar(30) NOT NULL,
