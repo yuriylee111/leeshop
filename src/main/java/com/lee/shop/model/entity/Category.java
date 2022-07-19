@@ -1,13 +1,13 @@
 package com.lee.shop.model.entity;
 
-public class Category extends BaseEntity<Short> {
+public class Category extends BaseEntity<Long> {
 
     private String name;
 
     public Category() {
     }
 
-    public Category(Short id, String name) {
+    public Category(Long id, String name) {
         super(id);
         this.name = name;
     }

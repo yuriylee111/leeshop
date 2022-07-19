@@ -102,14 +102,14 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
 
     private Product convertResultSetToProduct(ResultSet rs) throws SQLException {
         Product product = new Product();
-        product.setId(rs.getInt(PRODUCT_ID));
+        product.setId(rs.getLong(PRODUCT_ID));
         product.setName(rs.getString(PRODUCT_NAME));
         product.setDescription(rs.getString(PRODUCT_DESCRIPTION));
         product.setImage(rs.getString(PRODUCT_IMAGE));
         product.setPrice(rs.getBigDecimal(PRODUCT_PRICE));
         product.setCount(rs.getInt(PRODUCT_QUANTITY));
-        Country country = new Country(rs.getShort(COUNTRY_ID), rs.getString(COUNTRY_NAME));
-        Category category = new Category(rs.getShort(CATEGORY_ID), rs.getString(CATEGORY_NAME));
+        Country country = new Country(rs.getLong(COUNTRY_ID), rs.getString(COUNTRY_NAME));
+        Category category = new Category(rs.getLong(CATEGORY_ID), rs.getString(CATEGORY_NAME));
         product.setCountry(country);
         product.setCategory(category);
         return product;

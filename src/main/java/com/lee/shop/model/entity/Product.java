@@ -2,7 +2,7 @@ package com.lee.shop.model.entity;
 
 import java.math.BigDecimal;
 
-public class Product extends BaseEntity<Integer> {
+public class Product extends BaseEntity<Long> {
 
     private String name;
     private String description;
