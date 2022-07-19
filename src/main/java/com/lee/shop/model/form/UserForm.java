@@ -14,7 +14,7 @@ public class UserForm {
     public static final String PASSWORD2 = "password2";
     public static final String PHONE = "phone";
 
-    private final Integer id;
+    private final Long id;
     private final String email;
     private final String firstname;
     private final String lastname;
@@ -45,7 +45,7 @@ public class UserForm {
     public UserForm(HttpServletRequest request) {
         String id = request.getParameter(ID);
         if (id != null) {
-            this.id = Integer.parseInt(id);
+            this.id = Long.parseLong(id);
         } else {
             this.id = null;
         }
@@ -57,7 +57,7 @@ public class UserForm {
         this.phone = request.getParameter(PHONE);
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

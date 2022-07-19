@@ -8,17 +8,17 @@ import java.util.List;
 
 public class ShopOrder extends BaseEntity<Long> {
 
-    private Integer userId;
+    private Long userId;
     private List<OrderDetail> items;
     private OrderStatus status;
     private Timestamp created;
     private BigDecimal totalCost;
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

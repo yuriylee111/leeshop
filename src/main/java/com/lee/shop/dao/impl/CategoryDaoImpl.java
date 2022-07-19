@@ -31,7 +31,7 @@ public class CategoryDaoImpl extends BaseDaoImpl implements CategoryDao {
             List<Category> categoryList = new ArrayList<>();
             while (rs.next()) {
                 Category category = new Category();
-                category.setId(rs.getShort(CATEGORY_ID));
+                category.setId(rs.getLong(CATEGORY_ID));
                 category.setName(rs.getString(CATEGORY_NAME));
                 categoryList.add(category);
             }

@@ -28,7 +28,7 @@ public class ShoppingCart {
         refreshStatistics();
     }
 
-    public void removeProduct(Integer productId, int count) {
+    public void removeProduct(Long productId, int count) {
         Iterator<ShoppingCartItem> iterator = items.iterator();
         while (iterator.hasNext()) {
             ShoppingCartItem item = iterator.next();

@@ -2,7 +2,7 @@ package com.lee.shop.model.entity;
 
 import com.lee.shop.model.enumeration.Role;
 
-public class User extends BaseEntity<Integer> {
+public class User extends BaseEntity<Long> {
 
     private String firstname;
     private String lastname;

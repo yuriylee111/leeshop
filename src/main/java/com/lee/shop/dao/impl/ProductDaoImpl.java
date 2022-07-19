@@ -63,10 +63,10 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getAllForCategory(Short categoryId) {
+    public List<Product> getAllForCategory(Long categoryId) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(All_PRODUCTS_BY_CATEGORY)) {
-            statement.setShort(1, categoryId);
+            statement.setLong(1, categoryId);
             try (ResultSet rs = statement.executeQuery()) {
                 List<Product> productList = new ArrayList<>();
                 while (rs.next()) {
@@ -82,10 +82,10 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
     }
 
     @Override
-    public Product getById(int id) {
+    public Product getById(Long id) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(PRODUCT_BY_ID)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     return convertResultSetToProduct(rs);
@@ -102,14 +102,14 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
 
     private Product convertResultSetToProduct(ResultSet rs) throws SQLException {
         Product product = new Product();
-        product.setId(rs.getInt(PRODUCT_ID));
+        product.setId(rs.getLong(PRODUCT_ID));
         product.setName(rs.getString(PRODUCT_NAME));
         product.setDescription(rs.getString(PRODUCT_DESCRIPTION));
         product.setImage(rs.getString(PRODUCT_IMAGE));
         product.setPrice(rs.getBigDecimal(PRODUCT_PRICE));
         product.setCount(rs.getInt(PRODUCT_QUANTITY));
-        Country country = new Country(rs.getShort(COUNTRY_ID), rs.getString(COUNTRY_NAME));
-        Category category = new Category(rs.getShort(CATEGORY_ID), rs.getString(CATEGORY_NAME));
+        Country country = new Country(rs.getLong(COUNTRY_ID), rs.getString(COUNTRY_NAME));
+        Category category = new Category(rs.getLong(CATEGORY_ID), rs.getString(CATEGORY_NAME));
         product.setCountry(country);
         product.setCategory(category);
         return product;

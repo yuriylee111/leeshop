@@ -81,10 +81,10 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
     }
 
     @Override
-    public List<ShopOrder> getAllForUser(Integer userId) {
+    public List<ShopOrder> getAllForUser(Long userId) {
         Connection connection = getJdbcConnectionPool().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(All_ORDERS_BY_USER_ID)) {
-            statement.setInt(1, userId);
+            statement.setLong(1, userId);
             try (ResultSet rs = statement.executeQuery()) {
                 Map<Long, ShopOrder> shopOrderMap = new LinkedHashMap<>();
                 while (rs.next()) {
@@ -124,7 +124,7 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
         if (shopOrder == null) {
             shopOrder = new ShopOrder();
             shopOrder.setId(rs.getLong(ORDER_ID));
-            shopOrder.setUserId(rs.getInt(ORDER_USER_ID));
+            shopOrder.setUserId(rs.getLong(ORDER_USER_ID));
             shopOrder.setStatus(OrderStatus.valueOf(rs.getString(ORDER_STATUS)));
             shopOrder.setCreated(rs.getTimestamp(ORDER_CREATED));
             shopOrder.setItems(new ArrayList<>());
@@ -132,14 +132,14 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
             shopOrderMap.put(orderId, shopOrder);
         }
         Product product = new Product();
-        product.setId(rs.getInt(PRODUCT_ID));
+        product.setId(rs.getLong(PRODUCT_ID));
         product.setName(rs.getString(PRODUCT_NAME));
         product.setDescription(rs.getString(PRODUCT_DESCRIPTION));
         product.setImage(rs.getString(PRODUCT_IMAGE));
         product.setPrice(rs.getBigDecimal(PRODUCT_PRICE));
         product.setCount(rs.getInt(PRODUCT_COUNT));
-        Country country = new Country(rs.getShort(COUNTRY_ID), rs.getString(COUNTRY_NAME));
-        Category category = new Category(rs.getShort(CATEGORY_ID), rs.getString(CATEGORY_NAME));
+        Country country = new Country(rs.getLong(COUNTRY_ID), rs.getString(COUNTRY_NAME));
+        Category category = new Category(rs.getLong(CATEGORY_ID), rs.getString(CATEGORY_NAME));
         product.setCountry(country);
         product.setCategory(category);
 
@@ -157,7 +157,7 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
         Connection connection = getJdbcConnectionPool().getConnection();
         try {
             try (PreparedStatement shopOrderStatement = connection.prepareStatement(NEW_ORDER, new String[]{ORDER_ID})) {
-                shopOrderStatement.setInt(1, shopOrder.getUserId());
+                shopOrderStatement.setLong(1, shopOrder.getUserId());
                 shopOrderStatement.setString(2, shopOrder.getStatus().name());
                 shopOrderStatement.setTimestamp(3, shopOrder.getCreated());
                 shopOrderStatement.setBigDecimal(4, shopOrder.getTotalCost());

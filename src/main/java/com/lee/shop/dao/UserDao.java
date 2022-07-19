@@ -10,9 +10,9 @@ public interface UserDao {
 
     User getByEmail(String email);
 
-    User getById(Integer id);
+    User getById(Long id);
 
-    Integer create(User user);
+    Long create(User user);
 
     void update(User user);
 }

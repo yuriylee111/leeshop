@@ -8,7 +8,7 @@ public interface ShopOrderDao {
 
     List<ShopOrder> getAll();
 
-    List<ShopOrder> getAllForUser(Integer userId);
+    List<ShopOrder> getAllForUser(Long userId);
 
     ShopOrder getById(Long id);
 
