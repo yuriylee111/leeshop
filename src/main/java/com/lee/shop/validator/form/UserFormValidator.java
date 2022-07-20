@@ -41,9 +41,7 @@ public class UserFormValidator implements FormValidator<UserForm> {
                 map.put(UserForm.PASSWORD, "action.password.is.required");
             }
         }
-        if (form.getFirstname() == null || form.getFirstname().trim().isEmpty()) {
-            map.put(UserForm.FIRSTNAME, "action.firstname.is.required");
-        }
+        verifyThatFirstNameIsNotBlank(form, map);
         if (form.getLastname() == null || form.getLastname().trim().isEmpty()) {
             map.put(UserForm.LASTNAME, "action.lastname.is.required");
         }
@@ -55,5 +53,11 @@ public class UserFormValidator implements FormValidator<UserForm> {
             }
         }
         return map;
+    }
+
+    private void verifyThatFirstNameIsNotBlank(UserForm form, Map<String, String> map) {
+        if (form.getFirstname() == null || form.getFirstname().trim().isEmpty()) {
+            map.put(UserForm.FIRSTNAME, "action.firstname.is.required");
+        }
     }
 }

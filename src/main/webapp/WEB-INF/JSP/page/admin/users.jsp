@@ -27,10 +27,10 @@
             <td>${user.role}</td>
             <td class="hidden-print">
                 <c:choose>
-                    <c:when test="${user.role == 'USER'}">
+                    <c:when test="${user.active}">
                         <a href="/admin/lock?id=${user.id }" class="btn btn-danger"><fmt:message key="view.users.action.lock"/></a>
                     </c:when>
-                    <c:when test="${user.role == 'BLOCKED'}">
+                    <c:when test="${!user.active}">
                         <a href="/admin/un-lock?id=${user.id }" class="btn btn-success"><fmt:message key="view.users.action.un.lock"/></a>
                     </c:when>
                 </c:choose>

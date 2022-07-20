@@ -19,7 +19,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     private final static String ALL_USERS = "SELECT * FROM user ORDER BY id DESC";
     private final static String USER_BY_EMAIL = "SELECT * FROM user WHERE email = ?";
     private final static String USER_BY_ID = "SELECT * FROM user WHERE id = ?";
-    private final static String UPDATE_USER = "UPDATE user SET firstname = ?, lastname = ?, password = ?, phone = ?, role = ? WHERE id = ?";
+    private final static String UPDATE_USER = "UPDATE user SET firstname = ?, lastname = ?, password = ?, phone = ?, role = ?, active = ? WHERE id = ?";
 
     private final static String USER_ID = "id";
     private final static String FIRST_NAME = "firstname";
@@ -28,6 +28,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     private final static String PHONE = "phone";
     private final static String PASSWORD = "password";
     private final static String ROLE = "role";
+    private final static String ACTIVE = "active";
 
     public UserDaoImpl(JdbcConnectionPool jdbcConnectionPool) {
         super(jdbcConnectionPool);
@@ -98,6 +99,7 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
         user.setPassword(resultSet.getString(PASSWORD));
         user.setPhone(resultSet.getString(PHONE));
         user.setRole(Role.valueOf(resultSet.getString(ROLE)));
+        user.setActive(resultSet.getBoolean(ACTIVE));
         return user;
     }
 
@@ -135,7 +137,8 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
             statement.setString(3, user.getPassword());
             statement.setString(4, user.getPhone());
             statement.setString(5, user.getRole().name());
-            statement.setLong(6, user.getId());
+            statement.setBoolean(6, user.isActive());
+            statement.setLong(7, user.getId());
             if (statement.executeUpdate() != 1) {
                 throw new ApplicationException("Nothing to update, because user not found by email: " + user.getEmail());
             }

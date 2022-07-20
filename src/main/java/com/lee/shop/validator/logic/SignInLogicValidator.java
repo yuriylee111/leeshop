@@ -1,7 +1,6 @@
 package com.lee.shop.validator.logic;
 
 import com.lee.shop.model.entity.User;
-import com.lee.shop.model.enumeration.Role;
 import com.lee.shop.model.form.SignInForm;
 import com.lee.shop.security.PasswordEncoder;
 import com.lee.shop.validator.LogicValidator;
@@ -28,7 +27,7 @@ public class SignInLogicValidator implements LogicValidator<SignInForm, User> {
         if (user == null) {
             map.put(EMAIL, "action.email.sign-in.failed");
             LOGGER.warn("User not found by email: " + form.getEmail());
-        } else if (user.getRole() == Role.BLOCKED) {
+        } else if (!user.isActive()) {
             map.put(EMAIL, "action.email.blocked");
             LOGGER.warn("User is blocked for email: " + form.getEmail());
         } else if (!passwordEncoder.match(form.getPassword(), user.getPassword())) {

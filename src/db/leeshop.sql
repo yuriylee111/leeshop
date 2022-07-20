@@ -106,14 +106,15 @@ CREATE TABLE `user` (
   `email` varchar(30) NOT NULL,
   `password` varchar(60) NOT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `role` enum('USER','ADMIN','BLOCKED') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'USER',
+  `role` enum('USER','ADMIN') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'USER',
+  `active` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email_IDX` (`email`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'first_admin','last_admin','admin@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99',NULL,'ADMIN'),(2,'first_user','last_user','user@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99',NULL,'USER'),(3,'first_blocked','last_blocked','blocked@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99',NULL,'BLOCKED');
+INSERT INTO `user` VALUES (1,'first_admin','last_admin','admin@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99','111-22-33-44','ADMIN',1),(2,'first_user','last_user','user@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99','222-33-44-55','USER',1),(3,'first_blocked','last_blocked','blocked@gmail.com','5f4dcc3b5aa765d61d8327deb882cf99','333-44-55-66','USER',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

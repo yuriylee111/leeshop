@@ -10,6 +10,7 @@ public class User extends BaseEntity<Long> {
     private String password;
     private String phone;
     private Role role;
+    private boolean active = true;
 
     public String getFirstname() {
         return firstname;
@@ -61,6 +62,14 @@ public class User extends BaseEntity<Long> {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

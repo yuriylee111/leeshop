@@ -4,7 +4,6 @@ import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.UserDao;
 import com.lee.shop.model.entity.User;
-import com.lee.shop.model.enumeration.Role;
 import com.lee.shop.util.RoutingUtils;
 
 import javax.servlet.ServletException;
@@ -21,6 +20,7 @@ public class UnLockUserAction implements Action {
         this.userDao = userDao;
     }
 
+    @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long id = Long.parseLong(request.getParameter(ID));
         User user = userDao.getById(id);
@@ -28,7 +28,7 @@ public class UnLockUserAction implements Action {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         } else {
-            user.setRole(Role.USER);
+            user.setActive(true);
             userDao.update(user);
         }
         RoutingUtils.redirect(Constants.Url.ADMIN_SHOW_ALL_USERS, request, response);
