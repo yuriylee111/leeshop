@@ -4,7 +4,5 @@ public enum Role {
 
     USER,
 
-    ADMIN,
-
-    BLOCKED
+    ADMIN
 }
