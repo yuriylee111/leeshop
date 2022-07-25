@@ -15,6 +15,7 @@ import com.lee.shop.dao.impl.ShopOrderDaoImpl;
 import com.lee.shop.dao.impl.UserDaoImpl;
 import com.lee.shop.exception.ApplicationException;
 import com.lee.shop.jdbc.JdbcConnectionPool;
+import com.lee.shop.model.mapper.*;
 import com.lee.shop.security.MD5PasswordEncoder;
 import com.lee.shop.security.PasswordEncoder;
 import org.apache.log4j.Logger;
@@ -46,28 +47,39 @@ public class ComponentFactory {
         UserDao userDao = new UserDaoImpl(jdbcConnectionPool);
         ShopOrderDao shopOrderDao = new ShopOrderDaoImpl(jdbcConnectionPool);
 
+        HttpServletRequestToSignInDtoMapper httpServletRequestToSignInDtoMapper = new HttpServletRequestToSignInDtoMapper();
+        HttpServletRequestToUserDtoMapper httpServletRequestToUserDtoMapper = new HttpServletRequestToUserDtoMapper();
+        UserDtoToUserMapper userDtoToUserMapper = new UserDtoToUserMapper(passwordEncoder);
+        HttpServletRequestToAddToShoppingCartDtoMapper httpServletRequestToAddToShoppingCartDtoMapper =
+                new HttpServletRequestToAddToShoppingCartDtoMapper();
+        ShoppingCartToShopOrderMapper shoppingCartToShopOrderMapper = new ShoppingCartToShopOrderMapper();
+        UserToUserDtoMapper userToUserDtoMapper = new UserToUserDtoMapper();
+
         actionMap = new HashMap<>();
 
         // Common actions
         actionMap.put("GET " + Constants.Url.SHOW_PRODUCTS, new ShowProductsAction(productDao));
         actionMap.put("GET " + Constants.Url.SHOW_PRODUCTS_BY_CATEGORY, new ShowProductsByCategoryAction(productDao));
-        actionMap.put("GET " + Constants.Url.SIGN_IN, new ShowSignInFormAction());
-        actionMap.put("POST " + Constants.Url.SIGN_IN, new SignInAction(userDao, passwordEncoder));
-        actionMap.put("GET " + Constants.Url.SIGN_UP, new ShowSignUpFormAction());
-        actionMap.put("POST " + Constants.Url.SIGN_UP, new SignUpAction(userDao, passwordEncoder));
+        actionMap.put("GET " + Constants.Url.SIGN_IN, new ShowSignInDtoAction());
+        actionMap.put("POST " + Constants.Url.SIGN_IN, new SignInAction(httpServletRequestToSignInDtoMapper, userDao, passwordEncoder));
+        actionMap.put("GET " + Constants.Url.SIGN_UP, new ShowSignUpDtoAction());
+        actionMap.put("POST " + Constants.Url.SIGN_UP, new SignUpAction(httpServletRequestToUserDtoMapper, userDtoToUserMapper, userDao));
         actionMap.put("GET " + Constants.Url.SIGN_OUT, new SignOutAction());
 
         // User actions
-        actionMap.put("GET " + Constants.Url.USER_ADD_TO_SHOPPING_CART, new ShowAddToShoppingCartFormAction(productDao));
-        actionMap.put("POST " + Constants.Url.USER_ADD_TO_SHOPPING_CART, new AddToShoppingCartAction(productDao));
+        actionMap.put("GET " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
+                new ShowAddToShoppingCartDtoAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
+        actionMap.put("POST " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
+                new AddToShoppingCartAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
         actionMap.put("GET " + Constants.Url.USER_SHOPPING_CART, new ShowShoppingCartAction());
         actionMap.put("GET " + Constants.Url.USER_REMOVE_FROM_SHOPPING_CART, new RemoveFromShoppingCartAction());
 
-        actionMap.put("POST " + Constants.Url.USER_MAKE_ORDER, new MakeOrderAction(shopOrderDao));
+        actionMap.put("POST " + Constants.Url.USER_MAKE_ORDER, new MakeOrderAction(shoppingCartToShopOrderMapper, shopOrderDao));
         actionMap.put("GET " + Constants.Url.USER_MY_ORDERS, new MyOrdersAction(shopOrderDao));
         actionMap.put("GET " + Constants.Url.USER_GET_ORDER, new GetOrderAction(shopOrderDao));
-        actionMap.put("GET " + Constants.Url.USER_MY_ACCOUNT, new ShowMyAccountAction());
-        actionMap.put("POST " + Constants.Url.USER_MY_ACCOUNT, new UpdateMyAccountAction(userDao, passwordEncoder));
+        actionMap.put("GET " + Constants.Url.USER_MY_ACCOUNT, new ShowMyAccountAction(userToUserDtoMapper));
+        actionMap.put("POST " + Constants.Url.USER_MY_ACCOUNT,
+                new UpdateMyAccountAction(httpServletRequestToUserDtoMapper, userDtoToUserMapper, userDao));
 
         // Admin actions
         actionMap.put("GET " + Constants.Url.ADMIN_SHOW_ALL_USERS, new ShowAllUsersAction(userDao));

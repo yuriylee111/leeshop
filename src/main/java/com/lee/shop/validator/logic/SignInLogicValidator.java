@@ -1,7 +1,7 @@
 package com.lee.shop.validator.logic;
 
+import com.lee.shop.model.dto.SignInDto;
 import com.lee.shop.model.entity.User;
-import com.lee.shop.model.form.SignInForm;
 import com.lee.shop.security.PasswordEncoder;
 import com.lee.shop.validator.LogicValidator;
 import org.apache.log4j.Logger;
@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SignInLogicValidator implements LogicValidator<SignInForm, User> {
+public class SignInLogicValidator implements LogicValidator<SignInDto, User> {
 
     private static final Logger LOGGER = Logger.getLogger(SignInLogicValidator.class);
 
@@ -22,17 +22,17 @@ public class SignInLogicValidator implements LogicValidator<SignInForm, User> {
     }
 
     @Override
-    public Map<String, String> getErrors(SignInForm form, User user) {
+    public Map<String, String> getErrors(SignInDto signInDto, User user) {
         Map<String, String> map = new HashMap<>();
         if (user == null) {
             map.put(EMAIL, "action.email.sign-in.failed");
-            LOGGER.warn("User not found by email: " + form.getEmail());
+            LOGGER.warn("User not found by email: " + signInDto.getEmail());
         } else if (!user.isActive()) {
             map.put(EMAIL, "action.email.blocked");
-            LOGGER.warn("User is blocked for email: " + form.getEmail());
-        } else if (!passwordEncoder.match(form.getPassword(), user.getPassword())) {
+            LOGGER.warn("User is blocked for email: " + signInDto.getEmail());
+        } else if (!passwordEncoder.match(signInDto.getPassword(), user.getPassword())) {
             map.put(EMAIL, "action.email.sign-in.failed");
-            LOGGER.warn("Password not valid for " + form.getEmail());
+            LOGGER.warn("Password not valid for " + signInDto.getEmail());
         }
         return map;
     }

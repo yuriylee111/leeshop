@@ -16,7 +16,7 @@ public class Constants {
     public static final String CURRENT_LANGUAGE = "CURRENT_LANGUAGE";
     public static final String CURRENT_SHOPPING_CART = "CURRENT_SHOPPING_CART";
     public static final String ERROR_MAP = "ERROR_MAP";
-    public static final String FORM = "FORM";
+    public static final String DTO = "DTO";
     public static final String ENCODED_CURRENT_URL = "ENCODED_CURRENT_URL";
     public static final String UTF_8 = "UTF-8";
     public static final String BACK_URL = "backUrl";

@@ -9,6 +9,7 @@ import com.lee.shop.model.entity.User;
 import com.lee.shop.model.enumeration.OrderStatus;
 import com.lee.shop.model.local.ShoppingCart;
 import com.lee.shop.model.local.ShoppingCartItem;
+import com.lee.shop.model.mapper.ShoppingCartToShopOrderMapper;
 import com.lee.shop.util.RoutingUtils;
 import com.lee.shop.util.WebUtils;
 
@@ -21,9 +22,11 @@ import java.util.ArrayList;
 
 public class MakeOrderAction implements Action {
 
+    private final ShoppingCartToShopOrderMapper mapper;
     private final ShopOrderDao shopOrderDao;
 
-    public MakeOrderAction(ShopOrderDao shopOrderDao) {
+    public MakeOrderAction(ShoppingCartToShopOrderMapper mapper, ShopOrderDao shopOrderDao) {
+        this.mapper = mapper;
         this.shopOrderDao = shopOrderDao;
     }
 
@@ -32,26 +35,10 @@ public class MakeOrderAction implements Action {
         ShoppingCart shoppingCart = WebUtils.getShoppingCart(request);
         if (!shoppingCart.isEmpty()) {
             User user = WebUtils.getCurrentSessionUser(request);
-            ShopOrder shopOrder = createShopOrder(user, shoppingCart);
+            ShopOrder shopOrder = mapper.map(user, shoppingCart);
             shopOrderDao.create(shopOrder);
         }
         WebUtils.releaseShoppingCart(request);
         RoutingUtils.redirect(Constants.Url.USER_MY_ORDERS, request, response);
-    }
-
-    private ShopOrder createShopOrder(User user, ShoppingCart shoppingCart) {
-        ShopOrder shopOrder = new ShopOrder();
-        shopOrder.setStatus(OrderStatus.CREATED);
-        shopOrder.setCreated(new Timestamp(System.currentTimeMillis()));
-        shopOrder.setUserId(user.getId());
-        shopOrder.setTotalCost(shoppingCart.getTotalCost());
-        shopOrder.setItems(new ArrayList<>());
-        for (ShoppingCartItem item : shoppingCart.getItems()) {
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setProduct(item.getProduct());
-            orderDetail.setCount(item.getCount());
-            shopOrder.getItems().add(orderDetail);
-        }
-        return shopOrder;
     }
 }

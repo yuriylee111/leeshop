@@ -7,8 +7,8 @@
 <h4 class="text-center"><fmt:message key="view.add.to.shopping.cart.title"/></h4>
 <hr/>
 <form action="/user/add-to-shopping-cart" method="post">
-    <input type="hidden" name="productId" value="${FORM.productId}">
-    <input type="hidden" name="backUrl" value="${FORM.backUrl}">
+    <input type="hidden" name="productId" value="${DTO.productId}">
+    <input type="hidden" name="backUrl" value="${DTO.backUrl}">
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-sm-offset-3">
             <div class="panel panel-default">
@@ -36,7 +36,7 @@
                         </span>
                         <span class="list-group-item">
                             <small><fmt:message key="view.product.item.count"/>: </small>
-                            <input name="count" type="number" class="count" value="${FORM.count}" style="width: 80px">
+                            <input name="count" type="number" class="count" value="${DTO.count}" style="width: 80px">
                             <fmt:message key="view.add.to.shopping.cart.count.hint">
                                 <fmt:param value="${PRODUCT.count}"/>
                             </fmt:message>
@@ -49,7 +49,7 @@
                     <button type="submit" class="btn btn-primary">
                         <fmt:message key="view.button.add.to.shopping.cart"/>
                     </button>
-                    <a href="${FORM.backUrl}" type="button" class="btn btn-default">
+                    <a href="${DTO.backUrl}" type="button" class="btn btn-default">
                         <fmt:message key="view.button.cancel"/>
                     </a>
                 </div>

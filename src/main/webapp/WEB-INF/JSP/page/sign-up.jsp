@@ -12,7 +12,7 @@
                 <form action="/sign-up" method="post">
                     <div class="form-group ${ERROR_MAP['email'] != null ? 'has-error has-feedback' : ''}">
                         <label for="email"><fmt:message key="view.sign.in.email"/> </label>
-                        <input type="text" class="form-control" id="email" name="email" value="${FORM.email != null ? FORM.email : ''}">
+                        <input type="text" class="form-control" id="email" name="email" value="${DTO.email != null ? DTO.email : ''}">
                         <c:if test="${ERROR_MAP['email'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['email']}"/></div>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="form-group ${ERROR_MAP['firstname'] != null ? 'has-error has-feedback' : ''}">
                         <label for="firstname"><fmt:message key="view.update.my.account.firstname"/> </label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" value="${FORM.firstname != null ? FORM.firstname : ''}">
+                        <input type="text" class="form-control" id="firstname" name="firstname" value="${DTO.firstname != null ? DTO.firstname : ''}">
                         <c:if test="${ERROR_MAP['firstname'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['firstname']}"/></div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="form-group ${ERROR_MAP['lastname'] != null ? 'has-error has-feedback' : ''}">
                         <label for="firstname"><fmt:message key="view.update.my.account.lastname"/> </label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" value="${FORM.lastname != null ? FORM.lastname : ''}">
+                        <input type="text" class="form-control" id="lastname" name="lastname" value="${DTO.lastname != null ? DTO.lastname : ''}">
                         <c:if test="${ERROR_MAP['lastname'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['lastname']}"/></div>
@@ -52,7 +52,7 @@
                     </div>
                     <div class="form-group ${ERROR_MAP['phone'] != null ? 'has-error has-feedback' : ''}">
                         <label for="phone"><fmt:message key="view.update.my.account.phone"/></label>
-                        <input type="tel" class="form-control" id="phone" name="phone" value="${FORM.phone != null ? FORM.phone : ''}">
+                        <input type="tel" class="form-control" id="phone" name="phone" value="${DTO.phone != null ? DTO.phone : ''}">
                         <c:if test="${ERROR_MAP['phone'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['phone']}"/></div>

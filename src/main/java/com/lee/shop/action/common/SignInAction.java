@@ -3,13 +3,14 @@ package com.lee.shop.action.common;
 import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.UserDao;
+import com.lee.shop.model.dto.SignInDto;
 import com.lee.shop.model.entity.User;
 import com.lee.shop.model.enumeration.Role;
-import com.lee.shop.model.form.SignInForm;
+import com.lee.shop.model.mapper.HttpServletRequestToSignInDtoMapper;
 import com.lee.shop.security.PasswordEncoder;
 import com.lee.shop.util.RoutingUtils;
 import com.lee.shop.util.WebUtils;
-import com.lee.shop.validator.form.SignInFormValidator;
+import com.lee.shop.validator.dto.SignInDtoValidator;
 import com.lee.shop.validator.logic.SignInLogicValidator;
 
 import javax.servlet.ServletException;
@@ -20,20 +21,20 @@ import java.util.Map;
 
 public class SignInAction implements Action {
 
-    private static final String EMAIL = "email";
-    private static final String PASSWORD = "password";
-
     private static final String SIGN_IN_JSP = "sign-in.jsp";
+
+    private final HttpServletRequestToSignInDtoMapper mapper;
 
     private final UserDao userDao;
 
-    private final SignInFormValidator signInFormValidator;
+    private final SignInDtoValidator signInDtoValidator;
 
     private final SignInLogicValidator signInLogicValidator;
 
-    public SignInAction(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public SignInAction(HttpServletRequestToSignInDtoMapper mapper, UserDao userDao, PasswordEncoder passwordEncoder) {
+        this.mapper = mapper;
         this.userDao = userDao;
-        this.signInFormValidator = new SignInFormValidator();
+        this.signInDtoValidator = new SignInDtoValidator();
         this.signInLogicValidator = new SignInLogicValidator(passwordEncoder);
     }
 
@@ -42,11 +43,11 @@ public class SignInAction implements Action {
         if (WebUtils.isCurrentSessionUserPresent(request)) {
             RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         } else {
-            SignInForm form = new SignInForm(request.getParameter(EMAIL), request.getParameter(PASSWORD));
-            Map<String, String> validationErrors = signInFormValidator.getErrors(form);
+            SignInDto signInDto = mapper.map(request);
+            Map<String, String> validationErrors = signInDtoValidator.getErrors(signInDto);
             if (validationErrors.isEmpty()) {
-                User user = userDao.getByEmail(form.getEmail());
-                validationErrors = signInLogicValidator.getErrors(form, user);
+                User user = userDao.getByEmail(signInDto.getEmail());
+                validationErrors = signInLogicValidator.getErrors(signInDto, user);
                 if (validationErrors.isEmpty()) {
                     WebUtils.setCurrentSessionUser(request, user);
                     if (user.getRole() == Role.ADMIN) {

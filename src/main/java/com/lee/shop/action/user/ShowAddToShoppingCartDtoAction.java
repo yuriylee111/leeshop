@@ -4,24 +4,26 @@ import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.ProductDao;
 import com.lee.shop.model.entity.Product;
-import com.lee.shop.model.form.AddToShoppingCartForm;
+import com.lee.shop.model.dto.AddToShoppingCartDto;
+import com.lee.shop.model.mapper.HttpServletRequestToAddToShoppingCartDtoMapper;
 import com.lee.shop.util.RoutingUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLDecoder;
 
-public class ShowAddToShoppingCartFormAction implements Action {
+public class ShowAddToShoppingCartDtoAction implements Action {
 
     private static final String PRODUCT_ID = "productId";
     private static final String PRODUCT = "PRODUCT";
     private static final String USER_ADD_TO_CART_JSP = "user/add-to-shopping-cart.jsp";
 
+    private final HttpServletRequestToAddToShoppingCartDtoMapper mapper;
     private final ProductDao productDao;
 
-    public ShowAddToShoppingCartFormAction(ProductDao productDao) {
+    public ShowAddToShoppingCartDtoAction(HttpServletRequestToAddToShoppingCartDtoMapper mapper, ProductDao productDao) {
+        this.mapper = mapper;
         this.productDao = productDao;
     }
 
@@ -31,8 +33,8 @@ public class ShowAddToShoppingCartFormAction implements Action {
         Product product = productDao.getById(productId);
         if (product != null) {
             request.setAttribute(PRODUCT, product);
-            String backUrl = URLDecoder.decode(request.getParameter(Constants.BACK_URL), Constants.UTF_8);
-            request.setAttribute(Constants.FORM, new AddToShoppingCartForm(productId, 1, backUrl));
+            AddToShoppingCartDto addToShoppingCartDto = mapper.map(productId, request, 1);
+            request.setAttribute(Constants.DTO, addToShoppingCartDto);
             RoutingUtils.forwardToPage(USER_ADD_TO_CART_JSP, request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
