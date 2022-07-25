@@ -1,12 +1,12 @@
-package com.lee.shop.model.form;
+package com.lee.shop.model.dto;
 
-public class SignInForm {
+public class SignInDto {
 
     private final String email;
 
     private final String password;
 
-    public SignInForm(String email, String password) {
+    public SignInDto(String email, String password) {
         this.email = email;
         this.password = password;
     }
@@ -21,7 +21,7 @@ public class SignInForm {
 
     @Override
     public String toString() {
-        return "SignInForm{" +
+        return "SignInDto{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

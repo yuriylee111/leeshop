@@ -10,11 +10,11 @@
             <div class="panel-body">
                 <!-- https://getbootstrap.com/docs/3.3/css/#forms -->
                 <form action="/user/my-account" method="post">
-                    <input type="hidden" name="id" value="${FORM.id}">
-                    <input type="hidden" name="email" value="${FORM.email}">
+                    <input type="hidden" name="id" value="${DTO.id}">
+                    <input type="hidden" name="email" value="${DTO.email}">
                     <div class="form-group ${ERROR_MAP['firstname'] != null ? 'has-error has-feedback' : ''}">
                         <label for="firstname"><fmt:message key="view.update.my.account.firstname"/> </label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" value="${FORM.firstname != null ? FORM.firstname : ''}">
+                        <input type="text" class="form-control" id="firstname" name="firstname" value="${DTO.firstname != null ? DTO.firstname : ''}">
                         <c:if test="${ERROR_MAP['firstname'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['firstname']}"/></div>
@@ -22,7 +22,7 @@
                     </div>
                     <div class="form-group ${ERROR_MAP['lastname'] != null ? 'has-error has-feedback' : ''}">
                         <label for="firstname"><fmt:message key="view.update.my.account.lastname"/> </label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" value="${FORM.lastname != null ? FORM.lastname : ''}">
+                        <input type="text" class="form-control" id="lastname" name="lastname" value="${DTO.lastname != null ? DTO.lastname : ''}">
                         <c:if test="${ERROR_MAP['lastname'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['lastname']}"/></div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="form-group ${ERROR_MAP['phone'] != null ? 'has-error has-feedback' : ''}">
                         <label for="phone"><fmt:message key="view.update.my.account.phone"/></label>
-                        <input type="tel" class="form-control" id="phone" name="phone" value="${FORM.phone != null ? FORM.phone : ''}">
+                        <input type="tel" class="form-control" id="phone" name="phone" value="${DTO.phone != null ? DTO.phone : ''}">
                         <c:if test="${ERROR_MAP['phone'] != null}">
                             <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                             <div class="label label-danger"><fmt:message key="${ERROR_MAP['phone']}"/></div>

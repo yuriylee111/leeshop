@@ -3,12 +3,13 @@ package com.lee.shop.action.user;
 import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.UserDao;
+import com.lee.shop.model.dto.UserDto;
 import com.lee.shop.model.entity.User;
-import com.lee.shop.model.form.UserForm;
-import com.lee.shop.security.PasswordEncoder;
+import com.lee.shop.model.mapper.HttpServletRequestToUserDtoMapper;
+import com.lee.shop.model.mapper.UserDtoToUserMapper;
 import com.lee.shop.util.RoutingUtils;
 import com.lee.shop.util.WebUtils;
-import com.lee.shop.validator.form.UserFormValidator;
+import com.lee.shop.validator.dto.UserDtoValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,43 +21,38 @@ public class UpdateMyAccountAction implements Action {
 
     private static final String USER_MY_ACCOUNT_JSP = "user/my-account.jsp";
 
+    private final HttpServletRequestToUserDtoMapper httpServletRequestToUserDtoMapper;
+    private final UserDtoToUserMapper userDtoToUserMapper;
     private final UserDao userDao;
-    private final PasswordEncoder passwordEncoder;
-    private final UserFormValidator userFormValidator;
+    private final UserDtoValidator userDtoValidator;
 
-    public UpdateMyAccountAction(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UpdateMyAccountAction(HttpServletRequestToUserDtoMapper httpServletRequestToUserDtoMapper,
+                                 UserDtoToUserMapper userDtoToUserMapper,
+                                 UserDao userDao) {
+        this.httpServletRequestToUserDtoMapper = httpServletRequestToUserDtoMapper;
+        this.userDtoToUserMapper = userDtoToUserMapper;
         this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
-        this.userFormValidator = new UserFormValidator(userDao, false);
+        this.userDtoValidator = new UserDtoValidator(userDao, false);
     }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserForm form = new UserForm(request);
-        Map<String, String> validationErrors = userFormValidator.getErrors(form);
+        UserDto userDto = httpServletRequestToUserDtoMapper.map(request);
+        Map<String, String> validationErrors = userDtoValidator.getErrors(userDto);
         if (validationErrors.isEmpty()) {
-            User user = userDao.getById(form.getId());
+            User user = userDao.getById(userDto.getId());
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            updateUserData(user, form);
+            user = userDtoToUserMapper.map(user, userDto);
             userDao.update(user);
             WebUtils.setCurrentSessionUser(request, user);
             RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         } else {
-            request.setAttribute(Constants.FORM, form);
+            request.setAttribute(Constants.DTO, userDto);
             request.setAttribute(Constants.ERROR_MAP, validationErrors);
             RoutingUtils.forwardToPage(USER_MY_ACCOUNT_JSP, request, response);
         }
-    }
-
-    private void updateUserData(User user, UserForm form) {
-        user.setFirstname(form.getFirstname());
-        user.setLastname(form.getLastname());
-        if (form.isPasswordPresent()) {
-            user.setPassword(passwordEncoder.encode(form.getPassword()));
-        }
-        user.setPhone(form.getPhone());
     }
 }

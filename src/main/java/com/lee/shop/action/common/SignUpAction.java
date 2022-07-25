@@ -3,13 +3,13 @@ package com.lee.shop.action.common;
 import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.UserDao;
+import com.lee.shop.model.dto.UserDto;
 import com.lee.shop.model.entity.User;
-import com.lee.shop.model.enumeration.Role;
-import com.lee.shop.model.form.UserForm;
-import com.lee.shop.security.PasswordEncoder;
+import com.lee.shop.model.mapper.HttpServletRequestToUserDtoMapper;
+import com.lee.shop.model.mapper.UserDtoToUserMapper;
 import com.lee.shop.util.RoutingUtils;
 import com.lee.shop.util.WebUtils;
-import com.lee.shop.validator.form.UserFormValidator;
+import com.lee.shop.validator.dto.UserDtoValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,14 +21,18 @@ public class SignUpAction implements Action {
 
     private static final String SIGN_UP_JSP = "sign-up.jsp";
 
+    private final HttpServletRequestToUserDtoMapper httpServletRequestToUserDtoMapper;
+    private final UserDtoToUserMapper userDtoToUserMapper;
     private final UserDao userDao;
-    private final PasswordEncoder passwordEncoder;
-    private final UserFormValidator userFormValidator;
+    private final UserDtoValidator userDtoValidator;
 
-    public SignUpAction(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public SignUpAction(HttpServletRequestToUserDtoMapper httpServletRequestToUserDtoMapper,
+                        UserDtoToUserMapper userDtoToUserMapper,
+                        UserDao userDao) {
+        this.httpServletRequestToUserDtoMapper = httpServletRequestToUserDtoMapper;
+        this.userDtoToUserMapper = userDtoToUserMapper;
         this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
-        this.userFormValidator = new UserFormValidator(userDao, true);
+        this.userDtoValidator = new UserDtoValidator(userDao, true);
     }
 
     @Override
@@ -36,30 +40,19 @@ public class SignUpAction implements Action {
         if (WebUtils.isCurrentSessionUserPresent(request)) {
             RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         } else {
-            UserForm form = new UserForm(request);
-            Map<String, String> validationErrors = userFormValidator.getErrors(form);
+            UserDto userDto = httpServletRequestToUserDtoMapper.map(request);
+            Map<String, String> validationErrors = userDtoValidator.getErrors(userDto);
             if (validationErrors.isEmpty()) {
-                User user = createFrom(form);
+                User user = userDtoToUserMapper.map(userDto);
                 Long id = userDao.create(user);
                 user.setId(id);
                 WebUtils.setCurrentSessionUser(request, user);
                 RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
             } else {
-                request.setAttribute(Constants.FORM, form);
+                request.setAttribute(Constants.DTO, userDto);
                 request.setAttribute(Constants.ERROR_MAP, validationErrors);
                 RoutingUtils.forwardToPage(SIGN_UP_JSP, request, response);
             }
         }
-    }
-
-    private User createFrom(UserForm form) {
-        User user = new User();
-        user.setEmail(form.getEmail());
-        user.setFirstname(form.getFirstname());
-        user.setLastname(form.getLastname());
-        user.setPassword(passwordEncoder.encode(form.getPassword()));
-        user.setPhone(form.getPhone());
-        user.setRole(Role.USER);
-        return user;
     }
 }

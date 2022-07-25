@@ -1,12 +1,12 @@
-package com.lee.shop.model.form;
+package com.lee.shop.model.dto;
 
-public class AddToShoppingCartForm {
+public class AddToShoppingCartDto {
 
     private final long productId;
     private final int count;
     private final String backUrl;
 
-    public AddToShoppingCartForm(long productId, int count, String backUrl) {
+    public AddToShoppingCartDto(long productId, int count, String backUrl) {
         this.productId = productId;
         this.count = count;
         this.backUrl = backUrl;
@@ -26,7 +26,7 @@ public class AddToShoppingCartForm {
 
     @Override
     public String toString() {
-        return "AddToShoppingCartForm{" +
+        return "AddToShoppingCartDto{" +
                 "productId=" + productId +
                 ", count=" + count +
                 ", backUrl='" + backUrl + '\'' +
