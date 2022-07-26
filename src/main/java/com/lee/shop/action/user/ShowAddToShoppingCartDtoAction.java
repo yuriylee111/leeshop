@@ -3,8 +3,8 @@ package com.lee.shop.action.user;
 import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.ProductDao;
-import com.lee.shop.model.entity.Product;
 import com.lee.shop.model.dto.AddToShoppingCartDto;
+import com.lee.shop.model.entity.Product;
 import com.lee.shop.model.mapper.HttpServletRequestToAddToShoppingCartDtoMapper;
 import com.lee.shop.util.RoutingUtils;
 

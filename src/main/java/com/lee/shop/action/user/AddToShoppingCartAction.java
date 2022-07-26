@@ -3,10 +3,11 @@ package com.lee.shop.action.user;
 import com.lee.shop.Constants;
 import com.lee.shop.action.Action;
 import com.lee.shop.dao.ProductDao;
-import com.lee.shop.model.entity.Product;
 import com.lee.shop.model.dto.AddToShoppingCartDto;
+import com.lee.shop.model.entity.Product;
 import com.lee.shop.model.local.ShoppingCart;
 import com.lee.shop.model.mapper.HttpServletRequestToAddToShoppingCartDtoMapper;
+import com.lee.shop.service.ShoppingCartService;
 import com.lee.shop.util.RoutingUtils;
 import com.lee.shop.util.WebUtils;
 import com.lee.shop.validator.dto.AddToShoppingCartDtoValidator;
@@ -27,10 +28,14 @@ public class AddToShoppingCartAction implements Action {
     private final ProductDao productDao;
     private final AddToShoppingCartDtoValidator addToShoppingCartDtoValidator;
     private final AddToShoppingCartLogicValidator addToShoppingCartLogicValidator;
+    private final ShoppingCartService shoppingCartService;
 
-    public AddToShoppingCartAction(HttpServletRequestToAddToShoppingCartDtoMapper mapper, ProductDao productDao) {
+    public AddToShoppingCartAction(HttpServletRequestToAddToShoppingCartDtoMapper mapper,
+                                   ProductDao productDao,
+                                   ShoppingCartService shoppingCartService) {
         this.mapper = mapper;
         this.productDao = productDao;
+        this.shoppingCartService = shoppingCartService;
         this.addToShoppingCartDtoValidator = new AddToShoppingCartDtoValidator();
         this.addToShoppingCartLogicValidator = new AddToShoppingCartLogicValidator();
     }
@@ -48,7 +53,7 @@ public class AddToShoppingCartAction implements Action {
             validationErrors = addToShoppingCartLogicValidator.getErrors(addToShoppingCartDto, product);
             if (validationErrors.isEmpty()) {
                 ShoppingCart shoppingCart = WebUtils.getShoppingCart(request);
-                shoppingCart.addProduct(product, addToShoppingCartDto.getCount());
+                shoppingCartService.addProduct(shoppingCart, product, addToShoppingCartDto.getCount());
                 RoutingUtils.redirect(addToShoppingCartDto.getBackUrl(), request, response);
                 return;
             }

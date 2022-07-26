@@ -18,6 +18,8 @@ import com.lee.shop.jdbc.JdbcConnectionPool;
 import com.lee.shop.model.mapper.*;
 import com.lee.shop.security.MD5PasswordEncoder;
 import com.lee.shop.security.PasswordEncoder;
+import com.lee.shop.service.ShoppingCartService;
+import com.lee.shop.service.impl.ShoppingCartServiceImpl;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -55,6 +57,8 @@ public class ComponentFactory {
         ShoppingCartToShopOrderMapper shoppingCartToShopOrderMapper = new ShoppingCartToShopOrderMapper();
         UserToUserDtoMapper userToUserDtoMapper = new UserToUserDtoMapper();
 
+        ShoppingCartService shoppingCartService = new ShoppingCartServiceImpl();
+
         actionMap = new HashMap<>();
 
         // Common actions
@@ -70,9 +74,9 @@ public class ComponentFactory {
         actionMap.put("GET " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
                 new ShowAddToShoppingCartDtoAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
         actionMap.put("POST " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
-                new AddToShoppingCartAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
+                new AddToShoppingCartAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao, shoppingCartService));
         actionMap.put("GET " + Constants.Url.USER_SHOPPING_CART, new ShowShoppingCartAction());
-        actionMap.put("GET " + Constants.Url.USER_REMOVE_FROM_SHOPPING_CART, new RemoveFromShoppingCartAction());
+        actionMap.put("GET " + Constants.Url.USER_REMOVE_FROM_SHOPPING_CART, new RemoveFromShoppingCartAction(shoppingCartService));
 
         actionMap.put("POST " + Constants.Url.USER_MAKE_ORDER, new MakeOrderAction(shoppingCartToShopOrderMapper, shopOrderDao));
         actionMap.put("GET " + Constants.Url.USER_MY_ORDERS, new MyOrdersAction(shopOrderDao));
