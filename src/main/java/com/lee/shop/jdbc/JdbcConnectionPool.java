@@ -6,16 +6,16 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class JdbcConnectionPool {
 
     private static final Logger LOGGER = Logger.getLogger(JdbcConnectionPool.class);
 
-    private static final int GET_NEW_CONNECTION_TIMEOUT_IN_MILLIS = 100;
-    private static final int GET_NEW_CONNECTION_TRY_COUNT = 10;
+    private static final int GET_NEW_CONNECTION_TIMEOUT_IN_MILLIS = 1_000;
 
     private static final String URL = "db.url";
     private static final String USER = "db.user";
@@ -23,15 +23,16 @@ public class JdbcConnectionPool {
     private static final String DRIVER = "db.driver";
     private static final String POOL_SIZE = "db.pool.size";
 
-    private final LinkedList<Connection> pool = new LinkedList<>();
+    private final BlockingQueue<Connection> pool;
 
     public JdbcConnectionPool(Properties applicationProperties) {
         registerJdbDriver(applicationProperties.getProperty(DRIVER));
         int poolSize = Integer.parseInt(applicationProperties.getProperty(POOL_SIZE));
+        pool = new ArrayBlockingQueue<>(poolSize);
         try {
             for (int i = 0; i < poolSize; i++) {
                 Connection connection = getNewConnection(applicationProperties);
-                pool.addLast(connection);
+                pool.add(connection);
             }
         } catch (SQLException sqlException) {
             throw new ApplicationException("Can't create JDBC connection pool: " + sqlException.getMessage(), sqlException);
@@ -55,41 +56,32 @@ public class JdbcConnectionPool {
     }
 
     public Connection getConnection() {
-        Connection connection;
-        for (int i = 0; i < GET_NEW_CONNECTION_TRY_COUNT; i++) {
-            synchronized (pool) {
-                connection = pool.pollFirst();
-            }
+        try {
+            Connection connection = pool.poll(GET_NEW_CONNECTION_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             if (connection != null) {
                 return connection;
             } else {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(GET_NEW_CONNECTION_TIMEOUT_IN_MILLIS);
-                } catch (InterruptedException exception) {
-                    LOGGER.warn("Can't sleep current thread: " + Thread.currentThread(), exception);
-                }
+                throw new ApplicationException("Can't retrieve connection from pool: all connections are busy");
             }
+        } catch (InterruptedException interruptedException) {
+            throw new ApplicationException(
+                    "Can't retrieve connection from pool: " + interruptedException.getMessage(), interruptedException);
         }
-        throw new ApplicationException("Can't retrieve connection from pool: all connections are busy");
     }
 
     public void releaseConnection(Connection connection) {
-        synchronized (pool) {
-            pool.addLast(connection);
-        }
+        pool.add(connection);
     }
 
     public void releasePool() {
-        synchronized (pool) {
-            for (Connection connection : pool) {
-                try {
-                    connection.close();
-                } catch (SQLException sqlException) {
-                    LOGGER.error("Error during closing JDBC connection: " + sqlException.getMessage(), sqlException);
-                }
+        for (Connection connection : pool) {
+            try {
+                connection.close();
+            } catch (SQLException sqlException) {
+                LOGGER.error("Error during closing JDBC connection: " + sqlException.getMessage(), sqlException);
             }
-            pool.clear();
         }
+        pool.clear();
         LOGGER.info("Pool released");
     }
 }
