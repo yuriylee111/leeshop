@@ -25,7 +25,9 @@ public class ApplicationListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        componentFactory.getJdbcConnectionPool().releasePool();
+        if (componentFactory != null) {
+            componentFactory.getJdbcConnectionPool().releasePool();
+        }
         LOGGER.info("Application destroyed");
     }
 }
