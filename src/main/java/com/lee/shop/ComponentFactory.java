@@ -13,14 +13,14 @@ import com.lee.shop.dao.impl.CategoryDaoImpl;
 import com.lee.shop.dao.impl.ProductDaoImpl;
 import com.lee.shop.dao.impl.ShopOrderDaoImpl;
 import com.lee.shop.dao.impl.UserDaoImpl;
-import com.lee.shop.exception.ApplicationException;
 import com.lee.shop.jdbc.JdbcConnectionPool;
 import com.lee.shop.model.mapper.*;
 import com.lee.shop.security.MD5PasswordEncoder;
 import com.lee.shop.security.PasswordEncoder;
+import com.lee.shop.service.ShoppingCartService;
+import com.lee.shop.service.impl.ShoppingCartServiceImpl;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -38,7 +38,8 @@ public class ComponentFactory {
     private final Map<String, Action> actionMap;
 
     private ComponentFactory() {
-        Properties applicationProperties = createApplicationProperties();
+        ApplicationPropertiesLoader applicationPropertiesLoader = new ApplicationPropertiesLoader();
+        Properties applicationProperties = applicationPropertiesLoader.load();
         jdbcConnectionPool = new JdbcConnectionPool(applicationProperties);
         PasswordEncoder passwordEncoder = new MD5PasswordEncoder();
 
@@ -55,6 +56,8 @@ public class ComponentFactory {
         ShoppingCartToShopOrderMapper shoppingCartToShopOrderMapper = new ShoppingCartToShopOrderMapper();
         UserToUserDtoMapper userToUserDtoMapper = new UserToUserDtoMapper();
 
+        ShoppingCartService shoppingCartService = new ShoppingCartServiceImpl();
+
         actionMap = new HashMap<>();
 
         // Common actions
@@ -70,9 +73,9 @@ public class ComponentFactory {
         actionMap.put("GET " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
                 new ShowAddToShoppingCartDtoAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
         actionMap.put("POST " + Constants.Url.USER_ADD_TO_SHOPPING_CART,
-                new AddToShoppingCartAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao));
+                new AddToShoppingCartAction(httpServletRequestToAddToShoppingCartDtoMapper, productDao, shoppingCartService));
         actionMap.put("GET " + Constants.Url.USER_SHOPPING_CART, new ShowShoppingCartAction());
-        actionMap.put("GET " + Constants.Url.USER_REMOVE_FROM_SHOPPING_CART, new RemoveFromShoppingCartAction());
+        actionMap.put("GET " + Constants.Url.USER_REMOVE_FROM_SHOPPING_CART, new RemoveFromShoppingCartAction(shoppingCartService));
 
         actionMap.put("POST " + Constants.Url.USER_MAKE_ORDER, new MakeOrderAction(shoppingCartToShopOrderMapper, shopOrderDao));
         actionMap.put("GET " + Constants.Url.USER_MY_ORDERS, new MyOrdersAction(shopOrderDao));
@@ -104,17 +107,6 @@ public class ComponentFactory {
     public Action getAction(String key) {
         return actionMap.get(key);
     }
-
-    private Properties createApplicationProperties() {
-        Properties properties = new Properties();
-        try {
-            properties.load(ComponentFactory.class.getClassLoader().getResourceAsStream("application.properties"));
-        } catch (IOException exception) {
-            throw new ApplicationException("Can't load properties from classpath:/application.properties", exception);
-        }
-        return properties;
-    }
-
 
     private static final class ComponentFactoryHolder {
 
