@@ -1,5 +1,6 @@
 package com.lee.shop.validator.logic;
 
+import com.lee.shop.exception.InvalidUserInputException;
 import com.lee.shop.model.dto.SignInDto;
 import com.lee.shop.model.entity.User;
 import com.lee.shop.security.PasswordEncoder;
@@ -13,6 +14,7 @@ public class SignInLogicValidator implements LogicValidator<SignInDto, User> {
 
     private static final Logger LOGGER = Logger.getLogger(SignInLogicValidator.class);
 
+    private static final String SIGN_IN_JSP = "sign-in.jsp";
     private static final String EMAIL = "email";
 
     private final PasswordEncoder passwordEncoder;
@@ -22,18 +24,20 @@ public class SignInLogicValidator implements LogicValidator<SignInDto, User> {
     }
 
     @Override
-    public Map<String, String> getErrors(SignInDto signInDto, User user) {
-        Map<String, String> map = new HashMap<>();
+    public void validate(SignInDto signInDto, User user) {
+        Map<String, String> errorsMap = new HashMap<>();
         if (user == null) {
-            map.put(EMAIL, "action.email.sign-in.failed");
+            errorsMap.put(EMAIL, "action.email.sign-in.failed");
             LOGGER.warn("User not found by email: " + signInDto.getEmail());
         } else if (!user.isActive()) {
-            map.put(EMAIL, "action.email.blocked");
+            errorsMap.put(EMAIL, "action.email.blocked");
             LOGGER.warn("User is blocked for email: " + signInDto.getEmail());
         } else if (!passwordEncoder.match(signInDto.getPassword(), user.getPassword())) {
-            map.put(EMAIL, "action.email.sign-in.failed");
+            errorsMap.put(EMAIL, "action.email.sign-in.failed");
             LOGGER.warn("Password not valid for " + signInDto.getEmail());
         }
-        return map;
+        if (!errorsMap.isEmpty()) {
+            throw new InvalidUserInputException(SIGN_IN_JSP, errorsMap);
+        }
     }
 }

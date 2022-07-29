@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 public class SignUpAction implements Action {
 
@@ -32,7 +31,7 @@ public class SignUpAction implements Action {
         this.httpServletRequestToUserDtoMapper = httpServletRequestToUserDtoMapper;
         this.userDtoToUserMapper = userDtoToUserMapper;
         this.userDao = userDao;
-        this.userDtoValidator = new UserDtoValidator(userDao, true);
+        this.userDtoValidator = new UserDtoValidator(userDao, true, SIGN_UP_JSP);
     }
 
     @Override
@@ -41,18 +40,13 @@ public class SignUpAction implements Action {
             RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         } else {
             UserDto userDto = httpServletRequestToUserDtoMapper.map(request);
-            Map<String, String> validationErrors = userDtoValidator.getErrors(userDto);
-            if (validationErrors.isEmpty()) {
-                User user = userDtoToUserMapper.map(userDto);
-                Long id = userDao.create(user);
-                user.setId(id);
-                WebUtils.setCurrentSessionUser(request, user);
-                RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
-            } else {
-                request.setAttribute(Constants.DTO, userDto);
-                request.setAttribute(Constants.ERROR_MAP, validationErrors);
-                RoutingUtils.forwardToPage(SIGN_UP_JSP, request, response);
-            }
+            userDtoValidator.validate(userDto);
+
+            User user = userDtoToUserMapper.map(userDto);
+            Long id = userDao.create(user);
+            user.setId(id);
+            WebUtils.setCurrentSessionUser(request, user);
+            RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         }
     }
 }
