@@ -17,17 +17,27 @@ public class AddToShoppingCartLogicValidator implements LogicValidator<AddToShop
     @Override
     public void validate(AddToShoppingCartDto addToShoppingCartDto, Product product) {
         Map<String, String> errorsMap = new HashMap<>();
-        if (addToShoppingCartDto.getCount() <= 0) {
-            errorsMap.put("count", "action.count.add-to-card.not-positive");
-        }
-        if (addToShoppingCartDto.getCount() > product.getCount()) {
-            errorsMap.put("count", "action.count.add-to-card.max.exceeded");
-        }
+        validateProductCountIsPositive(addToShoppingCartDto, errorsMap);
+        validateProductCountNotExceeded(addToShoppingCartDto, product, errorsMap);
         if (!errorsMap.isEmpty()) {
             Map<String, Object> models = new HashMap<>();
             models.put(Constants.DTO, addToShoppingCartDto);
             models.put(PRODUCT, product);
             throw new InvalidUserInputException(USER_ADD_TO_CART_JSP, errorsMap, models);
+        }
+    }
+
+    private void validateProductCountIsPositive(
+            AddToShoppingCartDto addToShoppingCartDto, Map<String, String> errorsMap) {
+        if (addToShoppingCartDto.getCount() <= 0) {
+            errorsMap.put("count", "action.count.add-to-card.not-positive");
+        }
+    }
+
+    private void validateProductCountNotExceeded(
+            AddToShoppingCartDto addToShoppingCartDto, Product product, Map<String, String> errorsMap) {
+        if (addToShoppingCartDto.getCount() > product.getCount()) {
+            errorsMap.put("count", "action.count.add-to-card.max.exceeded");
         }
     }
 }

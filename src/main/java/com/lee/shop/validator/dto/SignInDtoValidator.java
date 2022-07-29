@@ -17,6 +17,14 @@ public class SignInDtoValidator implements DtoValidator<SignInDto> {
     @Override
     public void validate(SignInDto signInDto) {
         Map<String, String> errorsMap = new HashMap<>();
+        validateEmailIsRequired(signInDto, errorsMap);
+        validatePasswordIsRequired(signInDto, errorsMap);
+        if (!errorsMap.isEmpty()) {
+            throw new InvalidUserInputException(SIGN_IN_JSP, errorsMap);
+        }
+    }
+
+    private void validateEmailIsRequired(SignInDto signInDto, Map<String, String> errorsMap) {
         if (signInDto.getEmail() == null || signInDto.getEmail().trim().isEmpty()) {
             errorsMap.put(EMAIL, "action.email.is.required");
         } else {
@@ -24,11 +32,11 @@ public class SignInDtoValidator implements DtoValidator<SignInDto> {
                 errorsMap.put(EMAIL, "action.email.has.invalid.format");
             }
         }
+    }
+
+    private void validatePasswordIsRequired(SignInDto signInDto, Map<String, String> errorsMap) {
         if (signInDto.getPassword() == null || signInDto.getPassword().trim().isEmpty()) {
             errorsMap.put(PASSWORD, "action.password.is.required");
-        }
-        if (!errorsMap.isEmpty()) {
-            throw new InvalidUserInputException(SIGN_IN_JSP, errorsMap);
         }
     }
 }
