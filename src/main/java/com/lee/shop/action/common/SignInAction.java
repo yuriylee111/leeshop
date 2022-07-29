@@ -17,11 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 public class SignInAction implements Action {
-
-    private static final String SIGN_IN_JSP = "sign-in.jsp";
 
     private final HttpServletRequestToSignInDtoMapper mapper;
 
@@ -44,22 +41,17 @@ public class SignInAction implements Action {
             RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
         } else {
             SignInDto signInDto = mapper.map(request);
-            Map<String, String> validationErrors = signInDtoValidator.getErrors(signInDto);
-            if (validationErrors.isEmpty()) {
-                User user = userDao.getByEmail(signInDto.getEmail());
-                validationErrors = signInLogicValidator.getErrors(signInDto, user);
-                if (validationErrors.isEmpty()) {
-                    WebUtils.setCurrentSessionUser(request, user);
-                    if (user.getRole() == Role.ADMIN) {
-                        RoutingUtils.redirect(Constants.Url.ADMIN_SHOW_ALL_USERS, request, response);
-                    } else {
-                        RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
-                    }
-                    return;
-                }
+            signInDtoValidator.validate(signInDto);
+
+            User user = userDao.getByEmail(signInDto.getEmail());
+            signInLogicValidator.validate(signInDto, user);
+
+            WebUtils.setCurrentSessionUser(request, user);
+            if (user.getRole() == Role.ADMIN) {
+                RoutingUtils.redirect(Constants.Url.ADMIN_SHOW_ALL_USERS, request, response);
+            } else {
+                RoutingUtils.redirect(Constants.Url.SHOW_PRODUCTS, request, response);
             }
-            request.setAttribute(Constants.ERROR_MAP, validationErrors);
-            RoutingUtils.forwardToPage(SIGN_IN_JSP, request, response);
         }
     }
 }
