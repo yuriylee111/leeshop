@@ -23,6 +23,15 @@ public class JdbcConnectionPool {
     private static final String DRIVER = "db.driver";
     private static final String POOL_SIZE = "db.pool.size";
 
+    private static final String POOL_RELEASED_TEMPLATE = "Pool released";
+    private static final String CAN_T_RETRIEVE_CONNECTION_FROM_POOL_ALL_CONNECTIONS_ARE_BUSY_TEMPLATE =
+            "Can't retrieve connection from pool: all connections are busy";
+    private static final String CAN_T_CREATE_JDBC_CONNECTION_POOL_TEMPLATE = "Can't create JDBC connection pool: %s";
+    private static final String POOL_CREATED_SIZE_TEMPLATE = "Pool created: size = %s";
+    private static final String JDBC_DRIVER_CLASS_NOT_FOUND_TEMPLATE = "Jdbc driver class not found: %s";
+    private static final String CAN_T_RETRIEVE_CONNECTION_FROM_POOL_TEMPLATE = "Can't retrieve connection from pool: %s";
+    private static final String ERROR_DURING_CLOSING_JDBC_CONNECTION_TEMPLATE = "Error during closing JDBC connection: %s";
+
     private final BlockingQueue<Connection> pool;
 
     public JdbcConnectionPool(Properties applicationProperties) {
@@ -35,16 +44,17 @@ public class JdbcConnectionPool {
                 pool.add(connection);
             }
         } catch (SQLException sqlException) {
-            throw new ApplicationException("Can't create JDBC connection pool: " + sqlException.getMessage(), sqlException);
+            throw new ApplicationException(
+                    String.format(CAN_T_CREATE_JDBC_CONNECTION_POOL_TEMPLATE, sqlException.getMessage()), sqlException);
         }
-        LOGGER.info("Pool created: size = " + poolSize);
+        LOGGER.info(String.format(POOL_CREATED_SIZE_TEMPLATE, poolSize));
     }
 
     private void registerJdbDriver(String jdbcDriverClass) {
         try {
             Class.forName(jdbcDriverClass);
         } catch (ClassNotFoundException exception) {
-            throw new ApplicationException("Jdbc driver class not found: " + jdbcDriverClass);
+            throw new ApplicationException(String.format(JDBC_DRIVER_CLASS_NOT_FOUND_TEMPLATE, jdbcDriverClass));
         }
     }
 
@@ -61,11 +71,11 @@ public class JdbcConnectionPool {
             if (connection != null) {
                 return connection;
             } else {
-                throw new ApplicationException("Can't retrieve connection from pool: all connections are busy");
+                throw new ApplicationException(CAN_T_RETRIEVE_CONNECTION_FROM_POOL_ALL_CONNECTIONS_ARE_BUSY_TEMPLATE);
             }
         } catch (InterruptedException interruptedException) {
             throw new ApplicationException(
-                    "Can't retrieve connection from pool: " + interruptedException.getMessage(), interruptedException);
+                    String.format(CAN_T_RETRIEVE_CONNECTION_FROM_POOL_TEMPLATE, interruptedException.getMessage()), interruptedException);
         }
     }
 
@@ -78,10 +88,10 @@ public class JdbcConnectionPool {
             try {
                 connection.close();
             } catch (SQLException sqlException) {
-                LOGGER.error("Error during closing JDBC connection: " + sqlException.getMessage(), sqlException);
+                LOGGER.error(String.format(ERROR_DURING_CLOSING_JDBC_CONNECTION_TEMPLATE, sqlException.getMessage()), sqlException);
             }
         }
         pool.clear();
-        LOGGER.info("Pool released");
+        LOGGER.info(POOL_RELEASED_TEMPLATE);
     }
 }

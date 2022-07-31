@@ -30,6 +30,14 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     private final static String ROLE = "role";
     private final static String ACTIVE = "active";
 
+    private static final String CAN_T_GET_ALL_USERS_TEMPLATE = "Can't get all users: %s";
+    private static final String CAN_T_GET_USER_BY_EMAIL_TEMPLATE = "Can't get user by email = %s: %s";
+    private static final String CAN_T_GET_USER_BY_ID_TEMPLATE = "Can't get user by id = %s: %s";
+    private static final String CAN_T_READ_GENERATED_KEYS_FOR_TEMPLATE = "Can't read generated keys for: %s";
+    private static final String FAILED_TO_ADD_USER_TEMPLATE = "Failed to add user: %s";
+    private static final String NOTHING_TO_UPDATE_BECAUSE_USER_NOT_FOUND_BY_EMAIL_TEMPLATE = "Nothing to update, because user not found by email: %s";
+    private static final String FAILED_TO_UPDATE_USER_TEMPLATE = "Failed to update user: %s";
+
     public UserDaoImpl(JdbcConnectionPool jdbcConnectionPool) {
         super(jdbcConnectionPool);
     }
@@ -45,8 +53,8 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
                 }
                 return users;
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get user by id: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_ALL_USERS_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -64,8 +72,8 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
                     return null;
                 }
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get user by id: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_USER_BY_EMAIL_TEMPLATE, email, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -83,8 +91,8 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
                     return null;
                 }
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get user by id: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_USER_BY_ID_TEMPLATE, id, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -118,11 +126,11 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
                 } else {
-                    throw new ApplicationException("Can't read generated keys for: " + user);
+                    throw new ApplicationException(String.format(CAN_T_READ_GENERATED_KEYS_FOR_TEMPLATE, user));
                 }
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Failed to add user: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(FAILED_TO_ADD_USER_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -140,14 +148,12 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
             statement.setBoolean(6, user.isActive());
             statement.setLong(7, user.getId());
             if (statement.executeUpdate() != 1) {
-                throw new ApplicationException("Nothing to update, because user not found by email: " + user.getEmail());
+                throw new ApplicationException(String.format(NOTHING_TO_UPDATE_BECAUSE_USER_NOT_FOUND_BY_EMAIL_TEMPLATE, user.getEmail()));
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Failed to update user: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(FAILED_TO_UPDATE_USER_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
     }
-
-
 }

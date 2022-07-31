@@ -12,7 +12,11 @@ import java.util.Map;
 public class AddToShoppingCartLogicValidator implements LogicValidator<AddToShoppingCartDto, Product> {
 
     private static final String PRODUCT = "PRODUCT";
+    private static final String COUNT = "count";
     private static final String USER_ADD_TO_CART_JSP = "user/add-to-shopping-cart.jsp";
+
+    private static final String ACTION_COUNT_ADD_TO_CARD_NOT_POSITIVE_TEMPLATE = "action.count.add-to-card.not-positive";
+    private static final String ACTION_COUNT_ADD_TO_CARD_MAX_EXCEEDED_TEMPLATE = "action.count.add-to-card.max.exceeded";
 
     @Override
     public void validate(AddToShoppingCartDto addToShoppingCartDto, Product product) {
@@ -30,14 +34,14 @@ public class AddToShoppingCartLogicValidator implements LogicValidator<AddToShop
     private void validateProductCountIsPositive(
             AddToShoppingCartDto addToShoppingCartDto, Map<String, String> errorsMap) {
         if (addToShoppingCartDto.getCount() <= 0) {
-            errorsMap.put("count", "action.count.add-to-card.not-positive");
+            errorsMap.put(COUNT, ACTION_COUNT_ADD_TO_CARD_NOT_POSITIVE_TEMPLATE);
         }
     }
 
     private void validateProductCountNotExceeded(
             AddToShoppingCartDto addToShoppingCartDto, Product product, Map<String, String> errorsMap) {
         if (addToShoppingCartDto.getCount() > product.getCount()) {
-            errorsMap.put("count", "action.count.add-to-card.max.exceeded");
+            errorsMap.put(COUNT, ACTION_COUNT_ADD_TO_CARD_MAX_EXCEEDED_TEMPLATE);
         }
     }
 }

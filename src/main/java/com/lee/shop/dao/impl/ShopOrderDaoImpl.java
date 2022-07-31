@@ -18,19 +18,28 @@ import java.util.Map;
 public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
 
     private static final String All_ORDERS =
-            "SELECT * FROM shop_order JOIN order_detail ON order_detail.order_id = shop_order.id " +
-                    "JOIN product ON order_detail.product_id=product.id JOIN category ON product.category_id = category.id " +
-                    "JOIN country ON product.country_id = country.id ORDER BY shop_order.id DESC, order_detail.id ASC";
+            "SELECT * FROM shop_order " +
+                    "JOIN order_detail ON order_detail.order_id = shop_order.id " +
+                    "JOIN product ON order_detail.product_id=product.id " +
+                    "JOIN category ON product.category_id = category.id " +
+                    "JOIN country ON product.country_id = country.id " +
+                    "ORDER BY shop_order.id DESC, order_detail.id";
 
     private static final String All_ORDERS_BY_USER_ID =
-            "SELECT * FROM shop_order JOIN order_detail ON order_detail.order_id = shop_order.id " +
-                    "JOIN product ON order_detail.product_id=product.id JOIN category ON product.category_id = category.id " +
-                    "JOIN country ON product.country_id = country.id WHERE shop_order.user_id = ? ORDER BY shop_order.id DESC, order_detail.id ASC";
+            "SELECT * FROM shop_order " +
+                    "JOIN order_detail ON order_detail.order_id = shop_order.id " +
+                    "JOIN product ON order_detail.product_id=product.id " +
+                    "JOIN category ON product.category_id = category.id " +
+                    "JOIN country ON product.country_id = country.id " +
+                    "WHERE shop_order.user_id = ? ORDER BY shop_order.id DESC, order_detail.id";
 
     private static final String ORDER_BY_ID =
-            "SELECT * FROM shop_order JOIN order_detail ON order_detail.order_id = shop_order.id " +
-                    "JOIN product ON order_detail.product_id=product.id JOIN category ON product.category_id = category.id " +
-                    "JOIN country ON product.country_id = country.id WHERE order_detail.order_id = ? ORDER BY order_detail.id ASC";
+            "SELECT * FROM shop_order " +
+                    "JOIN order_detail ON order_detail.order_id = shop_order.id " +
+                    "JOIN product ON order_detail.product_id=product.id " +
+                    "JOIN category ON product.category_id = category.id " +
+                    "JOIN country ON product.country_id = country.id " +
+                    "WHERE order_detail.order_id = ? ORDER BY order_detail.id";
 
     private static final String NEW_ORDER = "INSERT INTO shop_order(user_id, status, created, total_cost) VALUES (?, ?, ?, ?)";
     private static final String NEW_ORDER_DETAIL = "INSERT INTO order_detail(order_id, product_id, count) VALUES (?, ?, ?)";
@@ -58,6 +67,15 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
     private static final String CATEGORY_ID = "category.id";
     private static final String CATEGORY_NAME = "category.name";
 
+    private static final String CAN_T_GET_ALL_ORDERS_TEMPLATE = "Can't get all orders: %s";
+    private static final String CAN_T_GET_ORDERS_FOR_USER_TEMPLATE = "Can't get orders for user = %s: %s";
+    private static final String CAN_T_GET_ORDER_BY_ID_TEMPLATE = "Can't get order by id = %s: %s";
+    private static final String CAN_T_READ_GENERATED_KEYS_FOR_TEMPLATE = "Can't read generated keys for: %s";
+    private static final String FAILED_TO_ADD_ORDER_TEMPLATE = "Failed to add order: %s";
+    private static final String NOTHING_TO_UPDATE_BECAUSE_ORDER_NOT_FOUND_BY_ID_TEMPLATE =
+            "Nothing to update, because order not found by id: %s";
+    private static final String FAILED_TO_UPDATE_ORDER_TEMPLATE = "Failed to update order: %s";
+
     public ShopOrderDaoImpl(JdbcConnectionPool jdbcConnectionPool) {
         super(jdbcConnectionPool);
     }
@@ -74,7 +92,7 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
                 return new ArrayList<>(shopOrderMap.values());
             }
         } catch (SQLException exception) {
-            throw new ApplicationException("Can't get all orders: " + exception.getMessage(), exception);
+            throw new ApplicationException(String.format(CAN_T_GET_ALL_ORDERS_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -93,7 +111,8 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
                 return new ArrayList<>(shopOrderMap.values());
             }
         } catch (SQLException exception) {
-            throw new ApplicationException("Can't get all orders: " + exception.getMessage(), exception);
+            throw new ApplicationException(
+                    String.format(CAN_T_GET_ORDERS_FOR_USER_TEMPLATE, userId, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -112,7 +131,8 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
                 return shopOrderMap.isEmpty() ? null : shopOrderMap.values().iterator().next();
             }
         } catch (SQLException exception) {
-            throw new ApplicationException("Can't get order by id: " + exception.getMessage(), exception);
+            throw new ApplicationException(
+                    String.format(CAN_T_GET_ORDER_BY_ID_TEMPLATE, id, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -177,12 +197,12 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
                         }
                         return orderId;
                     } else {
-                        throw new ApplicationException("Can't read generated keys for: " + shopOrder);
+                        throw new ApplicationException(String.format(CAN_T_READ_GENERATED_KEYS_FOR_TEMPLATE, shopOrder));
                     }
                 }
             }
         } catch (SQLException exception) {
-            throw new ApplicationException("Failed to add order: " + exception.getMessage(), exception);
+            throw new ApplicationException(String.format(FAILED_TO_ADD_ORDER_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -195,10 +215,12 @@ public class ShopOrderDaoImpl extends BaseDaoImpl implements ShopOrderDao {
             statement.setString(1, shopOrder.getStatus().name());
             statement.setLong(2, shopOrder.getId());
             if (statement.executeUpdate() != 1) {
-                throw new ApplicationException("Nothing to update, because order not found by id: " + shopOrder.getId());
+                throw new ApplicationException(
+                        String.format(NOTHING_TO_UPDATE_BECAUSE_ORDER_NOT_FOUND_BY_ID_TEMPLATE, shopOrder.getId()));
             }
         } catch (SQLException exception) {
-            throw new ApplicationException("Failed to update order: " + exception.getMessage(), exception);
+            throw new ApplicationException(
+                    String.format(FAILED_TO_UPDATE_ORDER_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }

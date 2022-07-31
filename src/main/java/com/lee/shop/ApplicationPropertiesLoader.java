@@ -16,6 +16,10 @@ public class ApplicationPropertiesLoader {
     private static final String CLASSPATH_APPLICATION_PROPERTIES = "application.properties";
     private static final String FILE_LEESHOP_PROPERTIES = "/leeshop.properties";
 
+    private static final String CLASSPATH_PREFIX = "classpath:/";
+    private static final String CONFIG_FILE_S_NOT_FOUND_TEMPLATE = "Config file: '%s' not found";
+    private static final String CAN_T_LOAD_PROPERTIES_FROM_TEMPLATE = "Can't load properties from %s";
+
     public Properties load() {
         Properties properties = new Properties();
         properties.putAll(loadApplicationPropertiesFromClasspathResource());
@@ -26,17 +30,17 @@ public class ApplicationPropertiesLoader {
     private Properties loadApplicationPropertiesFromClasspathResource() {
         return loadApplicationPropertiesFromInputStream(
                 ComponentFactory.class.getClassLoader().getResourceAsStream(CLASSPATH_APPLICATION_PROPERTIES),
-                "classpath:/" + CLASSPATH_APPLICATION_PROPERTIES);
+                CLASSPATH_PREFIX + CLASSPATH_APPLICATION_PROPERTIES);
     }
 
     private Properties loadApplicationPropertiesFromConfigFile() {
         try(InputStream inputStream = new FileInputStream(FILE_LEESHOP_PROPERTIES)) {
             return loadApplicationPropertiesFromInputStream(inputStream,  FILE_LEESHOP_PROPERTIES);
         } catch (FileNotFoundException ignore) {
-            LOGGER.warn("Config file: '" + FILE_LEESHOP_PROPERTIES + "' not found");
+            LOGGER.warn(String.format(CONFIG_FILE_S_NOT_FOUND_TEMPLATE, FILE_LEESHOP_PROPERTIES));
             return new Properties();
         } catch (IOException exception) {
-            throw new ApplicationException("Can't load properties from " + FILE_LEESHOP_PROPERTIES, exception);
+            throw new ApplicationException(String.format(CAN_T_LOAD_PROPERTIES_FROM_TEMPLATE, FILE_LEESHOP_PROPERTIES), exception);
         }
     }
 
@@ -45,7 +49,7 @@ public class ApplicationPropertiesLoader {
         try {
             properties.load(inputStream);
         } catch (IOException exception) {
-            throw new ApplicationException("Can't load properties from " + description, exception);
+            throw new ApplicationException(String.format(CAN_T_LOAD_PROPERTIES_FROM_TEMPLATE, description), exception);
         }
         return properties;
     }

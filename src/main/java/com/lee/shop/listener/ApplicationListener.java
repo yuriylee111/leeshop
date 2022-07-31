@@ -11,6 +11,9 @@ public class ApplicationListener implements ServletContextListener {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationListener.class);
 
+    private static final String APPLICATION_STARTED_TEMPLATE = "Application started";
+    private static final String APPLICATION_DESTROYED_TEMPLATE = "Application destroyed";
+
     private ComponentFactory componentFactory;
 
     @Override
@@ -20,7 +23,7 @@ public class ApplicationListener implements ServletContextListener {
 
         sce.getServletContext().setAttribute(Constants.CATEGORY_LIST, componentFactory.getCategoryDao().getAll());
 
-        LOGGER.info("Application started");
+        LOGGER.info(APPLICATION_STARTED_TEMPLATE);
     }
 
     @Override
@@ -28,6 +31,6 @@ public class ApplicationListener implements ServletContextListener {
         if (componentFactory != null) {
             componentFactory.getJdbcConnectionPool().releasePool();
         }
-        LOGGER.info("Application destroyed");
+        LOGGER.info(APPLICATION_DESTROYED_TEMPLATE);
     }
 }
