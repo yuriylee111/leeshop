@@ -19,6 +19,8 @@ public class CategoryDaoImpl extends BaseDaoImpl implements CategoryDao {
     private static final String CATEGORY_ID = "id";
     private static final String CATEGORY_NAME = "name";
 
+    private static final String CAN_T_GET_ALL_CATEGORIES_TEMPLATE = "Can't get all categories: %s";
+
     public CategoryDaoImpl(JdbcConnectionPool jdbcConnectionPool) {
         super(jdbcConnectionPool);
     }
@@ -36,8 +38,8 @@ public class CategoryDaoImpl extends BaseDaoImpl implements CategoryDao {
                 categoryList.add(category);
             }
             return categoryList;
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get all categories: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_ALL_CATEGORIES_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }

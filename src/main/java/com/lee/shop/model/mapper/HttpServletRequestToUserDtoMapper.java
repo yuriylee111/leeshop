@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 
 public class HttpServletRequestToUserDtoMapper {
 
-    public static final String ID = "id";
-    public static final String FIRSTNAME = "firstname";
-    public static final String LASTNAME = "lastname";
-    public static final String EMAIL = "email";
-    public static final String PASSWORD = "password";
-    public static final String PASSWORD2 = "password2";
-    public static final String PHONE = "phone";
+    private static final String ID = "id";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String PASSWORD2 = "password2";
+    private static final String PHONE = "phone";
 
     public UserDto map(HttpServletRequest request) {
         UserDto.Builder builder = new UserDto.Builder();

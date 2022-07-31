@@ -16,17 +16,20 @@ import java.util.List;
 
 public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
 
-    private static final String All_PRODUCTS =
-            "SELECT * FROM product JOIN category ON product.category_id = category.id JOIN country ON product.country_id = country.id " +
-                    "ORDER BY product.id";
+    private static final String All_PRODUCTS = "SELECT * FROM product " +
+            "JOIN category ON product.category_id = category.id " +
+            "JOIN country ON product.country_id = country.id " +
+            "ORDER BY product.id";
 
-    private static final String All_PRODUCTS_BY_CATEGORY =
-            "SELECT * FROM product JOIN category ON product.category_id = category.id JOIN country ON product.country_id = country.id " +
-                    "WHERE product.category_id = ? ORDER BY product.id";
+    private static final String All_PRODUCTS_BY_CATEGORY = "SELECT * FROM product " +
+            "JOIN category ON product.category_id = category.id " +
+            "JOIN country ON product.country_id = country.id " +
+            "WHERE product.category_id = ? ORDER BY product.id";
 
-    private static final String PRODUCT_BY_ID =
-            "SELECT * FROM product JOIN category ON product.category_id = category.id JOIN country ON product.country_id = country.id " +
-                    "WHERE product.id = ? ORDER BY product.id";
+    private static final String PRODUCT_BY_ID = "SELECT * FROM product " +
+            "JOIN category ON product.category_id = category.id " +
+            "JOIN country ON product.country_id = country.id " +
+            "WHERE product.id = ? ORDER BY product.id";
 
     private static final String PRODUCT_ID = "product.id";
     private static final String PRODUCT_NAME = "product.name";
@@ -39,6 +42,10 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
     private static final String COUNTRY_NAME = "country.name";
     private static final String CATEGORY_ID = "category.id";
     private static final String CATEGORY_NAME = "category.name";
+
+    private static final String CAN_T_GET_ALL_PRODUCTS_TEMPLATE = "Can't get all products: %s";
+    private static final String CAN_T_GET_PRODUCTS_BY_CATEGORY_TEMPLATE = "Can't get products by category = %s: %s";
+    private static final String CAN_T_GET_PRODUCT_BY_ID_TEMPLATE = "Can't get product by id = %s: %s";
 
     public ProductDaoImpl(JdbcConnectionPool jdbcConnectionPool) {
         super(jdbcConnectionPool);
@@ -55,8 +62,8 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
                 }
                 return productList;
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get all products: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_ALL_PRODUCTS_TEMPLATE, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -74,8 +81,9 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
                 }
                 return productList;
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get all products: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(
+                    String.format(CAN_T_GET_PRODUCTS_BY_CATEGORY_TEMPLATE, categoryId, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }
@@ -93,8 +101,8 @@ public class ProductDaoImpl extends BaseDaoImpl implements ProductDao {
                     return null;
                 }
             }
-        } catch (SQLException e) {
-            throw new ApplicationException("Can't get all products: " + e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new ApplicationException(String.format(CAN_T_GET_PRODUCT_BY_ID_TEMPLATE, id, exception.getMessage()), exception);
         } finally {
             getJdbcConnectionPool().releaseConnection(connection);
         }

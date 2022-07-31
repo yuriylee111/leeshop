@@ -17,6 +17,7 @@ public class SetOrderStatusAction implements Action {
 
     private static final String ID = "id";
     private static final String STATUS = "status";
+    private static final String CAN_T_CHANGE_STATUS_EXCEPTION_TEMPLATE = "Can't change status from %s to %s";
 
     private final ShopOrderDao shopOrderDao;
 
@@ -49,6 +50,6 @@ public class SetOrderStatusAction implements Action {
                 return;
             }
         }
-        throw new ApplicationException("Can't change status from " + oldStatus + " to " + newStatus);
+        throw new ApplicationException(String.format(CAN_T_CHANGE_STATUS_EXCEPTION_TEMPLATE, oldStatus, newStatus));
     }
 }

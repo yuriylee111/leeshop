@@ -11,12 +11,13 @@ import java.net.URLEncoder;
 public class WebUtils {
 
     private static final String GET = "GET";
+    private static final String QUESTION_MARK = "?";
 
     public static String getCurrentGetUrl(HttpServletRequest request) {
         if (GET.equals(request.getMethod())) {
             String queryString = request.getQueryString();
             if (queryString != null) {
-                return request.getRequestURI() + "?" + queryString;
+                return request.getRequestURI() + QUESTION_MARK + queryString;
             } else {
                 return request.getRequestURI();
             }

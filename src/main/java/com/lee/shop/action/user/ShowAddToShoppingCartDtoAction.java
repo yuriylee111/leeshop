@@ -18,6 +18,7 @@ public class ShowAddToShoppingCartDtoAction implements Action {
     private static final String PRODUCT_ID = "productId";
     private static final String PRODUCT = "PRODUCT";
     private static final String USER_ADD_TO_CART_JSP = "user/add-to-shopping-cart.jsp";
+    private static final int DEFAULT_PRODUCT_COUNT = 1;
 
     private final HttpServletRequestToAddToShoppingCartDtoMapper mapper;
     private final ProductDao productDao;
@@ -33,7 +34,7 @@ public class ShowAddToShoppingCartDtoAction implements Action {
         Product product = productDao.getById(productId);
         if (product != null) {
             request.setAttribute(PRODUCT, product);
-            AddToShoppingCartDto addToShoppingCartDto = mapper.map(productId, request, 1);
+            AddToShoppingCartDto addToShoppingCartDto = mapper.map(productId, request, DEFAULT_PRODUCT_COUNT);
             request.setAttribute(Constants.DTO, addToShoppingCartDto);
             RoutingUtils.forwardToPage(USER_ADD_TO_CART_JSP, request, response);
         } else {

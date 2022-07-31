@@ -8,9 +8,7 @@ import java.util.Map;
 public class InvalidUserInputException extends RuntimeException {
 
     private final String jspName;
-
     private final Map<String, String> errorsMap;
-
     private final Map<String, Object> models;
 
     public InvalidUserInputException(String jspName, Map<String, String> errorsMap) {
