@@ -1,0 +1,27 @@
+# docker-compose build
+# docker-compose up
+# docker-compose down
+
+version: '3'
+
+services:
+  leeshop-db:
+    # image: leeshop-mysql-db
+    build:
+      context: ./
+      dockerfile: ./leeshop-mysql-db.dockerfile
+    container_name: leeshop-db
+    ports:
+      - 3308:3306
+
+  leeshop-app:
+    # image: standalone-wildfly
+    build:
+      context: ./
+      dockerfile: ./wildfly.dockerfile
+    container_name: leeshop-app-wildfly
+    ports:
+      - 8080:8080
+      - 9990:9990
+    depends_on:
+      - leeshop-db
