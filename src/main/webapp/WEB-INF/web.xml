@@ -83,6 +83,11 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>default</servlet-name>
+        <servlet-class>com.lee.shop.action.DefaultServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
